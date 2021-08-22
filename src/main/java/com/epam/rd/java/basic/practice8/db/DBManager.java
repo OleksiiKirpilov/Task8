@@ -9,8 +9,11 @@ public class DBManager {
     private DBManager() {
     }
 
-    public static DBManager getInstance() {
-        return null;
+    public static synchronized DBManager getInstance() {
+        if (dbManager == null) {
+            dbManager = new DBManager();
+        }
+        return dbManager;
     }
 
     public Connection getConnection(String connectionUrl) throws SQLException {
