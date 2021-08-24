@@ -95,7 +95,7 @@ public class DbTest {
         Assert.assertFalse(dbManager.insertTeam(null));
         Assert.assertFalse(dbManager.deleteTeam(null));
         Assert.assertFalse(dbManager.updateTeam(null));
-        Assert.assertFalse(dbManager.setTeamsForUser(null, new Team[0]));
+        Assert.assertFalse(dbManager.setTeamsForUser(null));
     }
 
     @Test
