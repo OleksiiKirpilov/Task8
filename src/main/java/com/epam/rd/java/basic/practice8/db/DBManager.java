@@ -33,16 +33,6 @@ public class DBManager {
 
 
     public static synchronized Connection getConnection() {
-        if (connection != null) {
-            try {
-                connection.commit();
-                connection.close();
-            } catch (SQLException e) {
-                Logger.getGlobal().severe(e.getMessage());
-            } finally {
-                connection = null;
-            }
-        }
         try (InputStream is = new FileInputStream("app.properties")) {
             Properties prop = new Properties();
             prop.load(is);

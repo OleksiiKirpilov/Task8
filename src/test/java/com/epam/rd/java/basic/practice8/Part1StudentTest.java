@@ -1,11 +1,14 @@
 package com.epam.rd.java.basic.practice8;
 
 import com.epam.rd.java.basic.practice8.db.DBManager;
+import com.epam.rd.java.basic.practice8.db.entity.Team;
+import com.epam.rd.java.basic.practice8.db.entity.User;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Spy;
 
+import javax.jws.soap.SOAPBinding;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -77,8 +80,6 @@ public class Part1StudentTest {
         }
     }
 
-    //The DBManager#insertUser method should modify the ‘id’ field of the User object.
-    //The DBManager#findAllUsers method returns a java.util.List object
     @Test
     public void shouldRunDemo() {
         try {
@@ -88,5 +89,43 @@ public class Part1StudentTest {
         }
     }
 
+    @Test
+    public void usersWithSameLoginShouldBeEqual() {
+        User u1 = new User();
+        User u2 = new User();
+        u1.setLogin("John");
+        u1.setId(1);
+        u2.setLogin("John");
+        u2.setId(2);
+        Assert.assertEquals(u1, u2);
+    }
+
+    @Test
+    public void teamsWithSameNameShouldBeEqual() {
+        Team t1 = new Team();
+        Team t2 = new Team();
+        t1.setName("Kyiv");
+        t1.setId(1);
+        t2.setName("Kyiv");
+        t2.setId(2);
+        Assert.assertEquals(t1, t2);
+    }
+
+    @Test
+    public void sameEntitiesShouldBeEqual() {
+        Team t1 = new Team();
+        t1.setName("Kyiv");
+        Team t2 = t1;
+        User u1 = new User();
+        u1.setLogin("John");
+        User u2 = u1;
+        Assert.assertEquals(t1, t2);
+        Assert.assertEquals(u1, u2);
+        Assert.assertEquals(t1.hashCode(), t2.hashCode());
+        Assert.assertEquals(u1.hashCode(), u2.hashCode());
+    }
+
+    //The DBManager#insertUser method should modify the ‘id’ field of the User object.
+    //The DBManager#findAllUsers method returns a java.util.List object
 
 }
