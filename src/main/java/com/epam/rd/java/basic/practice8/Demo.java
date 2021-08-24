@@ -7,6 +7,8 @@ import com.epam.rd.java.basic.practice8.db.entity.User;
 
 public class Demo {
 
+    private static final String SEPARATOR = "===========================";
+
     private static void printList(List<?> list) {
         System.out.println(list);
     }
@@ -20,13 +22,13 @@ public class Demo {
         dbManager.insertUser(User.createUser("obama"));
         printList(dbManager.findAllUsers());
         // users  ==> [ivanov, petrov, obama]
-        System.out.println("===========================");
+        System.out.println(SEPARATOR);
         // Part 2
         dbManager.insertTeam(Team.createTeam("teamB"));
         dbManager.insertTeam(Team.createTeam("teamC"));
         printList(dbManager.findAllTeams());
         // teams ==> [teamA, teamB, teamC]
-        System.out.println("===========================");
+        System.out.println(SEPARATOR);
         // Part 3
         User userPetrov = dbManager.getUser("petrov");
         User userIvanov = dbManager.getUser("ivanov");
@@ -45,7 +47,7 @@ public class Demo {
         // teamA
         // teamA teamB
         // teamA teamB teamC
-        System.out.println("===========================");
+        System.out.println(SEPARATOR);
         // Part 4
         // on delete cascade!
         dbManager.deleteTeam(teamA);

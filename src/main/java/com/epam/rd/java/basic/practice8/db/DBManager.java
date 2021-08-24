@@ -47,21 +47,20 @@ public class DBManager {
     }
 
     private DBManager() {
-        connection = getConnection();
     }
 
     public static synchronized DBManager getInstance() {
         if (dbManager == null) {
             dbManager = new DBManager();
+            connection = getConnection();
         }
         return dbManager;
     }
 
     public synchronized boolean insertUser(User user) {
-        PreparedStatement ps = null;
         ResultSet rsId = null;
-        try {
-            ps = connection.prepareStatement(SQL_INSERT_USER, Statement.RETURN_GENERATED_KEYS);
+        try (PreparedStatement ps = connection.prepareStatement(SQL_INSERT_USER,
+                Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, user.getLogin());
             if (ps.executeUpdate() != 1) {
                 return false;
@@ -71,20 +70,18 @@ public class DBManager {
                 user.setId(rsId.getInt(1));
             }
         } catch (Exception e) {
-            System.out.println("insert user:" + e.getMessage());
+            Logger.getGlobal().severe(e.getMessage());
             return false;
         } finally {
             close(rsId);
-            close(ps);
         }
         return true;
     }
 
     public synchronized boolean insertTeam(Team team) {
-        PreparedStatement ps = null;
         ResultSet rsId = null;
-        try {
-            ps = connection.prepareStatement(SQL_INSERT_TEAM, Statement.RETURN_GENERATED_KEYS);
+        try (PreparedStatement ps = connection.prepareStatement(SQL_INSERT_TEAM,
+                Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, team.getName());
             if (ps.executeUpdate() != 1) {
                 return false;
@@ -94,21 +91,18 @@ public class DBManager {
                 team.setId(rsId.getInt(1));
             }
         } catch (Exception e) {
-            System.out.println("insert team:" + e.getMessage());
+            Logger.getGlobal().severe(e.getMessage());
             return false;
         } finally {
             close(rsId);
-            close(ps);
         }
         return true;
     }
 
     public synchronized User getUser(String login) {
         ResultSet rs = null;
-        PreparedStatement st = null;
         User user = null;
-        try {
-            st = connection.prepareStatement(SQL_FIND_USER_BY_LOGIN);
+        try (PreparedStatement st = connection.prepareStatement(SQL_FIND_USER_BY_LOGIN)) {
             st.setString(1, login);
             rs = st.executeQuery();
             if (rs.next()) {
@@ -120,17 +114,14 @@ public class DBManager {
             Logger.getGlobal().severe(ex.getMessage());
         } finally {
             close(rs);
-            close(st);
         }
         return user;
     }
 
     public synchronized Team getTeam(String name) {
         ResultSet rs = null;
-        PreparedStatement st = null;
         Team team = null;
-        try {
-            st = connection.prepareStatement(SQL_FIND_TEAM_BY_LOGIN);
+        try (PreparedStatement st = connection.prepareStatement(SQL_FIND_TEAM_BY_LOGIN)) {
             st.setString(1, name);
             rs = st.executeQuery();
             if (rs.next()) {
@@ -142,17 +133,14 @@ public class DBManager {
             Logger.getGlobal().severe(ex.getMessage());
         } finally {
             close(rs);
-            close(st);
         }
         return team;
     }
 
     public synchronized List<Team> getUserTeams(User user) {
         ResultSet rs = null;
-        PreparedStatement st = null;
         List<Team> teams = new ArrayList<>();
-        try {
-            st = connection.prepareStatement(SQL_FIND_TEAMS_BY_USER_ID);
+        try (PreparedStatement st = connection.prepareStatement(SQL_FIND_TEAMS_BY_USER_ID)) {
             st.setInt(1, user.getId());
             rs = st.executeQuery();
             while (rs.next()) {
@@ -166,17 +154,13 @@ public class DBManager {
             return Collections.emptyList();
         } finally {
             close(rs);
-            close(st);
         }
         return teams;
     }
 
     public synchronized boolean setTeamsForUser(User user, Team... teams) {
-        ResultSet rs = null;
-        PreparedStatement st = null;
-        try {
+        try (PreparedStatement st = connection.prepareStatement(SQL_INSERT_USER_TO_TEAM)) {
             connection.setAutoCommit(false);
-            st = connection.prepareStatement(SQL_INSERT_USER_TO_TEAM);
             for (Team t : teams) {
                 st.setInt(1, user.getId());
                 st.setInt(2, t.getId());
@@ -194,12 +178,10 @@ public class DBManager {
             try {
                 connection.rollback();
             } catch (SQLException e) {
-                e.printStackTrace();
+                Logger.getGlobal().severe(e.getMessage());
             }
             Logger.getGlobal().severe(ex.getMessage());
         } finally {
-            close(rs);
-            close(st);
             try {
                 connection.setAutoCommit(false);
             } catch (SQLException e) {
@@ -210,10 +192,7 @@ public class DBManager {
     }
 
     public synchronized boolean deleteTeam(Team team) {
-        ResultSet id = null;
-        PreparedStatement st = null;
-        try {
-            st = connection.prepareStatement(SQL_DELETE_TEAM);
+        try (PreparedStatement st = connection.prepareStatement(SQL_DELETE_TEAM)) {
             st.setString(1, team.getName());
             if (st.executeUpdate() != 1) {
                 return false;
@@ -221,18 +200,12 @@ public class DBManager {
         } catch (Exception e) {
             Logger.getGlobal().severe(e.getMessage());
             return false;
-        } finally {
-            close(id);
-            close(st);
         }
         return true;
     }
 
     public synchronized boolean updateTeam(Team team) {
-        ResultSet id = null;
-        PreparedStatement st = null;
-        try {
-            st = connection.prepareStatement(SQL_UPDATE_TEAM);
+        try (PreparedStatement st = connection.prepareStatement(SQL_UPDATE_TEAM)) {
             st.setString(1, team.getName());
             st.setInt(2, team.getId());
             if (st.executeUpdate() != 1) {
@@ -241,20 +214,14 @@ public class DBManager {
         } catch (Exception e) {
             Logger.getGlobal().severe(e.getMessage());
             return false;
-        } finally {
-            close(id);
-            close(st);
         }
         return true;
     }
 
     public synchronized List<User> findAllUsers() {
-        ResultSet rs = null;
-        Statement st = null;
         List<User> users = new ArrayList<>();
-        try {
-            st = connection.createStatement();
-            rs = st.executeQuery(SQL_FIND_ALL_USERS);
+        try (Statement st = connection.createStatement();
+             ResultSet rs = st.executeQuery(SQL_FIND_ALL_USERS)) {
             while (rs.next()) {
                 User user = new User();
                 user.setId(rs.getInt(1));
@@ -264,20 +231,14 @@ public class DBManager {
         } catch (Exception e) {
             Logger.getGlobal().severe(e.getMessage());
             return Collections.emptyList();
-        } finally {
-            close(rs);
-            close(st);
         }
         return users;
     }
 
     public synchronized List<Team> findAllTeams() {
-        ResultSet rs = null;
-        Statement st = null;
         List<Team> teams = new ArrayList<>();
-        try {
-            st = connection.createStatement();
-            rs = st.executeQuery(SQL_FIND_ALL_TEAMS);
+        try (Statement st = connection.createStatement();
+             ResultSet rs = st.executeQuery(SQL_FIND_ALL_TEAMS)) {
             while (rs.next()) {
                 Team team = new Team();
                 teams.add(team);
@@ -287,9 +248,6 @@ public class DBManager {
         } catch (Exception e) {
             Logger.getGlobal().severe(e.getMessage());
             return Collections.emptyList();
-        } finally {
-            close(rs);
-            close(st);
         }
         return teams;
     }
