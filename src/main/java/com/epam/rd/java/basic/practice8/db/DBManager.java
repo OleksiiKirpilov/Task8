@@ -168,7 +168,7 @@ public class DBManager {
 
     public boolean setTeamsForUser(User user, Team... teams) {
         try (PreparedStatement st = connection.prepareStatement(SQL_INSERT_USER_TO_TEAM)) {
-            setAutoCommit(connection, false);
+            setAutoCommit(false);
             for (Team t : teams) {
                 st.setInt(1, user.getId());
                 st.setInt(2, t.getId());
@@ -190,7 +190,7 @@ public class DBManager {
             }
             Logger.getGlobal().severe(ex.getMessage());
         } finally {
-            setAutoCommit(connection, true);
+            setAutoCommit(true);
         }
         return false;
     }
@@ -266,7 +266,7 @@ public class DBManager {
         }
     }
 
-    private static void setAutoCommit(Connection con, boolean value) {
+    private static void setAutoCommit(boolean value) {
         try {
             connection.setAutoCommit(value);
         } catch (SQLException e) {
