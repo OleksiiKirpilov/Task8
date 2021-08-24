@@ -246,12 +246,10 @@ public class DBManager {
     }
 
     private static void close(AutoCloseable ac) {
-        if (ac != null) {
-            try {
-                ac.close();
-            } catch (Exception e) {
-                Logger.getGlobal().severe(e.getMessage());
-            }
+        try {
+            ac.close();
+        } catch (Exception e) {
+            Logger.getGlobal().severe(e.getMessage());
         }
     }
 

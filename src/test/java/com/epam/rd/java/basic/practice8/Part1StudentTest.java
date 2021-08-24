@@ -8,7 +8,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Spy;
 
-import javax.jws.soap.SOAPBinding;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -123,6 +122,22 @@ public class Part1StudentTest {
         Assert.assertEquals(u1, u2);
         Assert.assertEquals(t1.hashCode(), t2.hashCode());
         Assert.assertEquals(u1.hashCode(), u2.hashCode());
+    }
+
+    @Test
+    public void entitiesOfDifferentClassesShouldNotBeEqual() {
+        Team t1 = new Team();
+        t1.setName("Kyiv");
+        User u1 = new User();
+        u1.setLogin("John");
+        Assert.assertNotEquals(t1, u1);
+        Assert.assertNotEquals(u1, t1);
+    }
+
+    @Test
+    public void insertNullShouldReturnFalse() {
+        Assert.assertFalse(dbManager.insertUser(null));
+        Assert.assertFalse(dbManager.insertTeam(null));
     }
 
     //The DBManager#insertUser method should modify the ‘id’ field of the User object.
