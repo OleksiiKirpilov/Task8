@@ -25,10 +25,8 @@ public class DBManager {
     private static final String SQL_FIND_USER_BY_LOGIN = "SELECT * FROM users WHERE login=?";
     private static final String SQL_FIND_TEAM_BY_LOGIN = "SELECT * FROM teams WHERE name=?";
     private static final String SQL_FIND_TEAMS_BY_USER_ID =
-            "SELECT t.id, t.name FROM users_teams ut\n"
-                    + "JOIN users u ON ut.user_id = u.id\n"
-                    + "JOIN teams t ON ut.team_id = t.id\n"
-                    + "WHERE u.id = ?";
+            "SELECT t.id, t.name FROM users_teams ut JOIN teams t ON ut.team_id = t.id\n"
+                    + "WHERE ut.user_id = ?";
 
     private static final String SQL_INSERT_USER_TO_TEAM = "INSERT INTO users_teams VALUES (?, ?)";
     private static final String SQL_DELETE_TEAM = "DELETE FROM teams WHERE name=?";
@@ -36,6 +34,16 @@ public class DBManager {
 
 
     public static synchronized Connection getConnection() {
+        if (connection != null) {
+            try {
+                connection.commit();
+                connection.close();
+            } catch (SQLException e) {
+                Logger.getGlobal().severe(e.getMessage());
+            } finally {
+                connection = null;
+            }
+        }
         try (InputStream is = new FileInputStream("app.properties")) {
             Properties prop = new Properties();
             prop.load(is);
@@ -57,7 +65,7 @@ public class DBManager {
         return dbManager;
     }
 
-    public synchronized boolean insertUser(User user) {
+    public boolean insertUser(User user) {
         ResultSet rsId = null;
         try (PreparedStatement ps = connection.prepareStatement(SQL_INSERT_USER,
                 Statement.RETURN_GENERATED_KEYS)) {
@@ -78,7 +86,7 @@ public class DBManager {
         return true;
     }
 
-    public synchronized boolean insertTeam(Team team) {
+    public boolean insertTeam(Team team) {
         ResultSet rsId = null;
         try (PreparedStatement ps = connection.prepareStatement(SQL_INSERT_TEAM,
                 Statement.RETURN_GENERATED_KEYS)) {
@@ -99,7 +107,7 @@ public class DBManager {
         return true;
     }
 
-    public synchronized User getUser(String login) {
+    public User getUser(String login) {
         ResultSet rs = null;
         User user = null;
         try (PreparedStatement st = connection.prepareStatement(SQL_FIND_USER_BY_LOGIN)) {
@@ -118,7 +126,7 @@ public class DBManager {
         return user;
     }
 
-    public synchronized Team getTeam(String name) {
+    public Team getTeam(String name) {
         ResultSet rs = null;
         Team team = null;
         try (PreparedStatement st = connection.prepareStatement(SQL_FIND_TEAM_BY_LOGIN)) {
@@ -137,7 +145,7 @@ public class DBManager {
         return team;
     }
 
-    public synchronized List<Team> getUserTeams(User user) {
+    public List<Team> getUserTeams(User user) {
         ResultSet rs = null;
         List<Team> teams = new ArrayList<>();
         try (PreparedStatement st = connection.prepareStatement(SQL_FIND_TEAMS_BY_USER_ID)) {
@@ -158,7 +166,7 @@ public class DBManager {
         return teams;
     }
 
-    public synchronized boolean setTeamsForUser(User user, Team... teams) {
+    public boolean setTeamsForUser(User user, Team... teams) {
         try (PreparedStatement st = connection.prepareStatement(SQL_INSERT_USER_TO_TEAM)) {
             connection.setAutoCommit(false);
             for (Team t : teams) {
@@ -191,7 +199,7 @@ public class DBManager {
         return false;
     }
 
-    public synchronized boolean deleteTeam(Team team) {
+    public boolean deleteTeam(Team team) {
         try (PreparedStatement st = connection.prepareStatement(SQL_DELETE_TEAM)) {
             st.setString(1, team.getName());
             if (st.executeUpdate() != 1) {
@@ -204,7 +212,7 @@ public class DBManager {
         return true;
     }
 
-    public synchronized boolean updateTeam(Team team) {
+    public boolean updateTeam(Team team) {
         try (PreparedStatement st = connection.prepareStatement(SQL_UPDATE_TEAM)) {
             st.setString(1, team.getName());
             st.setInt(2, team.getId());
@@ -218,7 +226,7 @@ public class DBManager {
         return true;
     }
 
-    public synchronized List<User> findAllUsers() {
+    public List<User> findAllUsers() {
         List<User> users = new ArrayList<>();
         try (Statement st = connection.createStatement();
              ResultSet rs = st.executeQuery(SQL_FIND_ALL_USERS)) {
@@ -235,7 +243,7 @@ public class DBManager {
         return users;
     }
 
-    public synchronized List<Team> findAllTeams() {
+    public List<Team> findAllTeams() {
         List<Team> teams = new ArrayList<>();
         try (Statement st = connection.createStatement();
              ResultSet rs = st.executeQuery(SQL_FIND_ALL_TEAMS)) {
