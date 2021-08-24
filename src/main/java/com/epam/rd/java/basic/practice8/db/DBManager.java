@@ -223,7 +223,7 @@ public class DBManager {
             }
         } catch (Exception e) {
             Logger.getGlobal().severe(e.getMessage());
-            return Collections.emptyList();
+            return users;
         }
         return users;
     }
@@ -240,12 +240,15 @@ public class DBManager {
             }
         } catch (Exception e) {
             Logger.getGlobal().severe(e.getMessage());
-            return Collections.emptyList();
+            return teams;
         }
         return teams;
     }
 
     private static void close(AutoCloseable ac) {
+        if (ac == null) {
+            return;
+        }
         try {
             ac.close();
         } catch (Exception e) {

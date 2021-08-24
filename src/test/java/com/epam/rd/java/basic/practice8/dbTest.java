@@ -17,7 +17,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
-public class Part1StudentTest {
+public class dbTest {
 
     private static final String JDBC_DRIVER = "org.h2.Driver";
     //private static final String DB_URL = "jdbc:h2:~/test";
@@ -135,9 +135,19 @@ public class Part1StudentTest {
     }
 
     @Test
-    public void insertNullShouldReturnFalse() {
+    public void actionsWithNullShouldReturnFalse() {
         Assert.assertFalse(dbManager.insertUser(null));
         Assert.assertFalse(dbManager.insertTeam(null));
+        Assert.assertFalse(dbManager.insertTeam(null));
+        Assert.assertFalse(dbManager.deleteTeam(null));
+        Assert.assertTrue(dbManager.setTeamsForUser(null, new Team[0]));
+        Assert.assertTrue(dbManager.getUserTeams(null).isEmpty());
+    }
+
+    @Test
+    public void getForNullShouldReturnNull() {
+        Assert.assertNull(dbManager.getUser(null));
+        Assert.assertNull(dbManager.getTeam(null));
     }
 
     //The DBManager#insertUser method should modify the ‘id’ field of the User object.
