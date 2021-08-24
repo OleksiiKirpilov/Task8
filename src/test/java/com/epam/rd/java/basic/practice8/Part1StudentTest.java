@@ -1,6 +1,7 @@
 package com.epam.rd.java.basic.practice8;
 
 import com.epam.rd.java.basic.practice8.db.DBManager;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Spy;
@@ -23,27 +24,25 @@ public class Part1StudentTest {
     private static final String URL_CONNECTION = "jdbc:h2:mem:test;user=youruser;password=yourpassword";
     private static final String USER = "youruser";
     private static final String PASS = "yourpassword";
-    private static final String SQL_CREATE_USERS =
-            "CREATE TABLE IF NOT EXISTS users (\n" +
-            "  id INTEGER(11) NOT NULL AUTO_INCREMENT,\n" +
-            " login VARCHAR(10) NOT NULL, \n" +
-            "  PRIMARY KEY (id));";
-    private static final String SQL_SETUP_USERS = "CREATE TABLE `users`\n" +
-            "(\n" +
+    private static final String SQL_SETUP_USERS =
+            "CREATE TABLE `users`\n" +
+            "(" +
             "    `id`    INT         NOT NULL AUTO_INCREMENT,\n" +
             "    `login` VARCHAR(10) NOT NULL,\n" +
             "    PRIMARY KEY (`id`),\n" +
             "    UNIQUE KEY `login` (`login`)\n" +
             ");";
-    private static final String SQL_SETUP_TEAMS = "CREATE TABLE `teams`\n" +
-            "(\n" +
+    private static final String SQL_SETUP_TEAMS =
+            "CREATE TABLE `teams`\n" +
+            "(" +
             "    `id`   INT         NOT NULL AUTO_INCREMENT,\n" +
             "    `name` VARCHAR(10) NOT NULL,\n" +
             "    PRIMARY KEY (`id`),\n" +
             "    UNIQUE KEY `name` (`name`)\n" +
             ");";
-    private static final String SQL_SETUP_UT = "CREATE TABLE `users_teams`\n" +
-            "(\n" +
+    private static final String SQL_SETUP_UT =
+            "CREATE TABLE `users_teams`\n" +
+            "(" +
             "    `user_id` INT REFERENCES users (id) ON DELETE CASCADE,\n" +
             "    `team_id` INT REFERENCES teams (id) ON DELETE CASCADE,\n" +
             "    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,\n" +
@@ -61,7 +60,6 @@ public class Part1StudentTest {
 
     @BeforeClass
     public static void beforeTest() throws SQLException, ClassNotFoundException {
-        //Class.forName(JDBC_DRIVER);
         try (OutputStream output = new FileOutputStream("app.properties")) {
             Properties prop = new Properties();
             prop.setProperty("connection.url", URL_CONNECTION);
@@ -83,7 +81,11 @@ public class Part1StudentTest {
     //The DBManager#findAllUsers method returns a java.util.List object
     @Test
     public void shouldRunDemo() {
-        Demo.main(new String[0]);
+        try {
+            Demo.main(new String[0]);
+        } catch (Exception e) {
+            Assert.fail(e.getMessage());
+        }
     }
 
 
