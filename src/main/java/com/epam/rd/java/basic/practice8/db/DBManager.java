@@ -35,7 +35,7 @@ public class DBManager {
     private static final String SQL_UPDATE_TEAM = "UPDATE teams SET name=? WHERE id=?";
 
 
-    public static Connection getConnection() {
+    public static synchronized Connection getConnection() {
         try (InputStream is = new FileInputStream("app.properties")) {
             Properties prop = new Properties();
             prop.load(is);
@@ -57,7 +57,7 @@ public class DBManager {
         return dbManager;
     }
 
-    public boolean insertUser(User user) {
+    public synchronized boolean insertUser(User user) {
         PreparedStatement ps = null;
         ResultSet rsId = null;
         try {
@@ -80,7 +80,7 @@ public class DBManager {
         return true;
     }
 
-    public boolean insertTeam(Team team) {
+    public synchronized boolean insertTeam(Team team) {
         PreparedStatement ps = null;
         ResultSet rsId = null;
         try {
@@ -103,7 +103,7 @@ public class DBManager {
         return true;
     }
 
-    public User getUser(String login) {
+    public synchronized User getUser(String login) {
         ResultSet rs = null;
         PreparedStatement st = null;
         User user = null;
@@ -125,7 +125,7 @@ public class DBManager {
         return user;
     }
 
-    public Team getTeam(String name) {
+    public synchronized Team getTeam(String name) {
         ResultSet rs = null;
         PreparedStatement st = null;
         Team team = null;
@@ -147,7 +147,7 @@ public class DBManager {
         return team;
     }
 
-    public List<Team> getUserTeams(User user) {
+    public synchronized List<Team> getUserTeams(User user) {
         ResultSet rs = null;
         PreparedStatement st = null;
         List<Team> teams = new ArrayList<>();
@@ -171,7 +171,7 @@ public class DBManager {
         return teams;
     }
 
-    public boolean setTeamsForUser(User user, Team... teams) {
+    public synchronized boolean setTeamsForUser(User user, Team... teams) {
         ResultSet rs = null;
         PreparedStatement st = null;
         try {
@@ -209,7 +209,7 @@ public class DBManager {
         return false;
     }
 
-    public boolean deleteTeam(Team team) {
+    public synchronized boolean deleteTeam(Team team) {
         ResultSet id = null;
         PreparedStatement st = null;
         try {
@@ -228,7 +228,7 @@ public class DBManager {
         return true;
     }
 
-    public boolean updateTeam(Team team) {
+    public synchronized boolean updateTeam(Team team) {
         ResultSet id = null;
         PreparedStatement st = null;
         try {
@@ -248,7 +248,7 @@ public class DBManager {
         return true;
     }
 
-    public List<User> findAllUsers() {
+    public synchronized List<User> findAllUsers() {
         ResultSet rs = null;
         Statement st = null;
         List<User> users = new ArrayList<>();
@@ -271,7 +271,7 @@ public class DBManager {
         return users;
     }
 
-    public List<Team> findAllTeams() {
+    public synchronized List<Team> findAllTeams() {
         ResultSet rs = null;
         Statement st = null;
         List<Team> teams = new ArrayList<>();
