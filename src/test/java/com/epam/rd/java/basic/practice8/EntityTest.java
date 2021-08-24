@@ -53,5 +53,4 @@ public class EntityTest {
         Assert.assertNotEquals(u1, t1);
     }
 
-
 }

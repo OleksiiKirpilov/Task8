@@ -94,9 +94,13 @@ public class DbTest {
         Assert.assertFalse(dbManager.insertTeam(null));
         Assert.assertFalse(dbManager.insertTeam(null));
         Assert.assertFalse(dbManager.deleteTeam(null));
-        Assert.assertTrue(dbManager.setTeamsForUser(null, new Team[0]));
-        Assert.assertTrue(dbManager.getUserTeams(null).isEmpty());
         Assert.assertFalse(dbManager.updateTeam(null));
+        Assert.assertFalse(dbManager.setTeamsForUser(null, new Team[0]));
+    }
+
+    @Test
+    public void getUserTeamsShouldReturnEmptyListForNull() {
+        Assert.assertTrue(dbManager.getUserTeams(null).isEmpty());
     }
 
     @Test
@@ -117,7 +121,5 @@ public class DbTest {
         Assert.assertFalse(dbManager.insertTeam(t));
     }
 
-    //The DBManager#insertUser method should modify the ‘id’ field of the User object.
-    //The DBManager#findAllUsers method returns a java.util.List object
 
 }

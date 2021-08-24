@@ -7,16 +7,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class DBManager {
-
-    private static DBManager dbManager;
-    private static Connection connection;
 
     private static final String SQL_ADD_USER = "INSERT INTO users VALUES (DEFAULT ,?)";
     private static final String SQL_ADD_TEAM = "INSERT INTO teams VALUES (DEFAULT ,?)";
@@ -30,6 +24,9 @@ public class DBManager {
     private static final String SQL_ADD_USER_TO_TEAM = "INSERT INTO users_teams VALUES (?, ?)";
     private static final String SQL_DELETE_TEAM = "DELETE FROM teams WHERE name=?";
     private static final String SQL_UPDATE_TEAM_NAME = "UPDATE teams SET name=? WHERE id=?";
+
+    private static DBManager dbManager;
+    private static Connection connection;
 
 
     public static synchronized Connection getConnection() {
@@ -158,13 +155,16 @@ public class DBManager {
     public boolean setTeamsForUser(User user, Team... teams) {
         try (PreparedStatement st = connection.prepareStatement(SQL_ADD_USER_TO_TEAM)) {
             setAutoCommit(false);
+            if (teams.length == 0) {
+                return false;
+            }
             for (Team t : teams) {
                 st.setInt(1, user.getId());
                 st.setInt(2, t.getId());
                 st.addBatch();
             }
-            int[] usersTeams = st.executeBatch();
-            for (int i : usersTeams) {
+            int[] teamsCounts = st.executeBatch();
+            for (int i : teamsCounts) {
                 if (i != 1) {
                     return false;
                 }
