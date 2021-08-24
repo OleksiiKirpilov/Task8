@@ -23,6 +23,12 @@ public class User {
         this.login = login;
     }
 
+    public static User createUser(String login) {
+        User user = new User();
+        user.setLogin(login);
+        return user;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

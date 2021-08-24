@@ -23,6 +23,12 @@ public class Team {
         this.name = name;
     }
 
+    public static Team createTeam(String name) {
+        Team team = new Team();
+        team.setName(name);
+        return team;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
