@@ -17,7 +17,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
-public class dbTest {
+public class DbTest {
 
     private static final String JDBC_DRIVER = "org.h2.Driver";
     //private static final String DB_URL = "jdbc:h2:~/test";
@@ -61,7 +61,7 @@ public class dbTest {
     private static DBManager dbManager;
 
     @BeforeClass
-    public static void beforeTest() throws SQLException, ClassNotFoundException {
+    public static void beforeTest() throws SQLException {
         try (OutputStream output = new FileOutputStream("app.properties")) {
             Properties prop = new Properties();
             prop.setProperty("connection.url", URL_CONNECTION);
@@ -89,52 +89,6 @@ public class dbTest {
     }
 
     @Test
-    public void usersWithSameLoginShouldBeEqual() {
-        User u1 = new User();
-        User u2 = new User();
-        u1.setLogin("John");
-        u1.setId(1);
-        u2.setLogin("John");
-        u2.setId(2);
-        Assert.assertEquals(u1, u2);
-    }
-
-    @Test
-    public void teamsWithSameNameShouldBeEqual() {
-        Team t1 = new Team();
-        Team t2 = new Team();
-        t1.setName("Kyiv");
-        t1.setId(1);
-        t2.setName("Kyiv");
-        t2.setId(2);
-        Assert.assertEquals(t1, t2);
-    }
-
-    @Test
-    public void sameEntitiesShouldBeEqual() {
-        Team t1 = new Team();
-        t1.setName("Kyiv");
-        Team t2 = t1;
-        User u1 = new User();
-        u1.setLogin("John");
-        User u2 = u1;
-        Assert.assertEquals(t1, t2);
-        Assert.assertEquals(u1, u2);
-        Assert.assertEquals(t1.hashCode(), t2.hashCode());
-        Assert.assertEquals(u1.hashCode(), u2.hashCode());
-    }
-
-    @Test
-    public void entitiesOfDifferentClassesShouldNotBeEqual() {
-        Team t1 = new Team();
-        t1.setName("Kyiv");
-        User u1 = new User();
-        u1.setLogin("John");
-        Assert.assertNotEquals(t1, u1);
-        Assert.assertNotEquals(u1, t1);
-    }
-
-    @Test
     public void actionsWithNullShouldReturnFalse() {
         Assert.assertFalse(dbManager.insertUser(null));
         Assert.assertFalse(dbManager.insertTeam(null));
@@ -142,12 +96,25 @@ public class dbTest {
         Assert.assertFalse(dbManager.deleteTeam(null));
         Assert.assertTrue(dbManager.setTeamsForUser(null, new Team[0]));
         Assert.assertTrue(dbManager.getUserTeams(null).isEmpty());
+        Assert.assertFalse(dbManager.updateTeam(null));
     }
 
     @Test
     public void getForNullShouldReturnNull() {
         Assert.assertNull(dbManager.getUser(null));
         Assert.assertNull(dbManager.getTeam(null));
+    }
+
+    @Test
+    public void secondInsertShouldReturnFalse() {
+        User u = new User();
+        u.setLogin("John");
+        Team t = new Team();
+        t.setName("Kyiv");
+        dbManager.insertUser(u);
+        dbManager.insertTeam(t);
+        Assert.assertFalse(dbManager.insertUser(u));
+        Assert.assertFalse(dbManager.insertTeam(t));
     }
 
     //The DBManager#insertUser method should modify the ‘id’ field of the User object.
