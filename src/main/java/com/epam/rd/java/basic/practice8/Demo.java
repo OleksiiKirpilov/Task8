@@ -51,6 +51,12 @@ public class Demo {
         // Part 4
         // on delete cascade!
         dbManager.deleteTeam(teamA);
+
+        for (User user : dbManager.findAllUsers()) {
+            printList(dbManager.getUserTeams(user));
+            System.out.println("========");
+        }
+
         // Part 5
         teamC.setName("teamX");
         dbManager.updateTeam(teamC);
