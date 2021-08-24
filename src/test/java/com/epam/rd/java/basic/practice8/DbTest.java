@@ -19,7 +19,7 @@ import java.util.Properties;
 
 public class DbTest {
 
-    private static final String JDBC_DRIVER = "org.h2.Driver";
+    //private static final String JDBC_DRIVER = "org.h2.Driver";
     //private static final String DB_URL = "jdbc:h2:~/test";
     private static final String DB_URL = "jdbc:h2:mem:test;MODE=MySQL";
     //private static final String URL_CONNECTION = "jdbc:h2:~/test;user=youruser;password=yourpassword";
