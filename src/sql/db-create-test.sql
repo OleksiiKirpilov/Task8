@@ -18,8 +18,6 @@ CREATE TABLE `users_teams`
 (
     `user_id` INT REFERENCES `users` (`id`) ON DELETE CASCADE,
     `team_id` INT REFERENCES `teams` (`id`) ON DELETE CASCADE,
-    FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-    FOREIGN KEY (`team_id`) REFERENCES `teams` (`id`) ON DELETE CASCADE,
     UNIQUE (`user_id`, `team_id`)
 );
 

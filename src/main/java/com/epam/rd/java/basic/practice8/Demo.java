@@ -1,9 +1,10 @@
 package com.epam.rd.java.basic.practice8;
 
-import java.util.List;
 import com.epam.rd.java.basic.practice8.db.DBManager;
 import com.epam.rd.java.basic.practice8.db.entity.Team;
 import com.epam.rd.java.basic.practice8.db.entity.User;
+
+import java.util.List;
 
 public class Demo {
 

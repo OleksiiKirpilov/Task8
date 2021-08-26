@@ -45,12 +45,27 @@ public class EntityTest {
 
     @Test
     public void entitiesOfDifferentClassesShouldNotBeEqual() {
-        Team t1 = new Team();
-        t1.setName("Kyiv");
-        User u1 = new User();
-        u1.setLogin("John");
+        Team t1 = Team.createTeam("Kyiv");
+        User u1 = User.createUser("John");
         Assert.assertNotEquals(t1, u1);
         Assert.assertNotEquals(u1, t1);
     }
 
+    @Test
+    public void getIdShouldReturnId() {
+        Team t1 = Team.createTeam("Kyiv");
+        t1.setId(1);
+        User u1 = User.createUser("John");
+        u1.setId(1);
+        Assert.assertEquals(1, t1.getId());
+        Assert.assertEquals(1, u1.getId());
+    }
+
+    @Test
+    public void toStringShouldReturnName() {
+        Team t1 = Team.createTeam("Kyiv");
+        User u1 = User.createUser("John");
+        Assert.assertEquals("Kyiv", t1.toString());
+        Assert.assertEquals("John", u1.toString());
+    }
 }

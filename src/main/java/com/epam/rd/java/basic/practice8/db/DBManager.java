@@ -7,7 +7,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 public class DBManager {
@@ -22,7 +25,9 @@ public class DBManager {
             "SELECT t.id, t.name FROM users_teams ut JOIN teams t ON ut.team_id = t.id\n"
                     + "WHERE ut.user_id = ?";
     private static final String SQL_ADD_USER_TO_TEAM = "INSERT INTO users_teams VALUES (?, ?)";
-    private static final String SQL_DELETE_TEAM = "DELETE FROM teams WHERE name=?";
+    private static final String SQL_DELETE_ALL_TEAMS_FOR_USER =
+            "DELETE FROM users_teams WHERE user_id=?";
+    private static final String SQL_DELETE_TEAM_BY_NAME = "DELETE FROM teams WHERE name=?";
     private static final String SQL_UPDATE_TEAM_NAME = "UPDATE teams SET name=? WHERE id=?";
 
     private static DBManager dbManager;
@@ -153,13 +158,21 @@ public class DBManager {
     }
 
     public boolean setTeamsForUser(User user, Team... teams) {
+        if (teams.length == 0) {
+            return false;
+        }
+        setAutoCommit(false);
+        // Delete all current teams of the user
+        try (PreparedStatement st = connection.prepareStatement(SQL_DELETE_ALL_TEAMS_FOR_USER)) {
+            st.setInt(1, user.getId());
+            st.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getGlobal().severe(ex.getMessage());
+        }
+        // Add all teams for user
         try (PreparedStatement st = connection.prepareStatement(SQL_ADD_USER_TO_TEAM)) {
-            setAutoCommit(false);
-            if (teams.length == 0) {
-                return false;
-            }
+            st.setInt(1, user.getId());
             for (Team t : teams) {
-                st.setInt(1, user.getId());
                 st.setInt(2, t.getId());
                 st.addBatch();
             }
@@ -171,7 +184,7 @@ public class DBManager {
             }
             connection.commit();
             return true;
-        } catch (SQLException ex) {
+        } catch (SQLException | NullPointerException ex) {
             try {
                 connection.rollback();
             } catch (SQLException e) {
@@ -185,7 +198,7 @@ public class DBManager {
     }
 
     public boolean deleteTeam(Team team) {
-        try (PreparedStatement st = connection.prepareStatement(SQL_DELETE_TEAM)) {
+        try (PreparedStatement st = connection.prepareStatement(SQL_DELETE_TEAM_BY_NAME)) {
             st.setString(1, team.getName());
             if (st.executeUpdate() != 1) {
                 return false;
